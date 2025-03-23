@@ -3,7 +3,7 @@ import Navbar from "./components/navbar.component";
 import UserAuthForm from "./pages/userAuthForm.page";
 import { createContext, useEffect, useState } from "react";
 import { lookInSession } from "./common/session";
-import Editor from "./pages/editor.pages"; 
+import Editor from "./pages/editor.pages";
 
 export const UserContext = createContext({});
 
@@ -31,8 +31,22 @@ const App = () => {
       <Routes>
         {/* Home, Sign-in, and Sign-up will have Navbar */}
         <Route path="/" element={<LayoutWithNavbar></LayoutWithNavbar>} />
-        <Route path="/signin" element={<LayoutWithNavbar><UserAuthForm type="sign-in" /></LayoutWithNavbar>} />
-        <Route path="/signup" element={<LayoutWithNavbar><UserAuthForm type="sign-up" /></LayoutWithNavbar>} />
+        <Route
+          path="/signin"
+          element={
+            <LayoutWithNavbar>
+              <UserAuthForm type="sign-in" />
+            </LayoutWithNavbar>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <LayoutWithNavbar>
+              <UserAuthForm type="sign-up" />
+            </LayoutWithNavbar>
+          }
+        />
 
         {/* Editor page will NOT have Navbar */}
         <Route path="/editor" element={<Editor />} />

@@ -17,8 +17,6 @@ const UserAuthForm = ({ type }) => {
     setUserAuth,
   } = useContext(UserContext);
 
-  console.log(access_token);
-
   const userAuthThroughServer = (serverRoute, formData) => {
     const url = import.meta.env.VITE_SERVER_DOMAIN + serverRoute;
     console.log("API URL:", url);

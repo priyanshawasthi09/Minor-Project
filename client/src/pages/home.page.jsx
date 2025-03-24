@@ -1,7 +1,12 @@
+import axios from "axios";
 import AnimationWrapper from "../common/page-animation";
 import InPageNavigation from "../components/inpage-navigation.component";
 
 const HomePage = () => {
+  const fetchLatestBlogs = () => {
+    axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs");
+  };
+
   return (
     <AnimationWrapper>
       <section className="h-cover flex justify-center gap-10">

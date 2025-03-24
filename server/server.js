@@ -13,6 +13,7 @@ import fs from "fs/promises";
 const serviceAccountKey = JSON.parse(
   await fs.readFile(new URL("./service-account.json", import.meta.url))
 );
+console.log(import.meta.url);
 
 //Schemas
 import User from "./Schema/User.js";
@@ -149,6 +150,7 @@ server.post("/google-auth", async (req, res) => {
     .verifyIdToken(access_token)
     .then(async (decodedUser) => {
       let { email, name, picture } = decodedUser;
+      console.log(picture);
 
       picture = picture.replace("s96-c", "s384-c");
       let user = await User.findOne({ "personal_info.email": email })
@@ -244,6 +246,24 @@ const verifyJWT = (req, res, next) => {
     next();
   });
 };
+
+server.get("/latest-blogs", (req, res) => {
+  let maxLimit = 5;
+  Blog.find({ draft: false })
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname  -_id"
+    )
+    .sort({ publishedAt: -1 })
+    .select("blog_id title des banner activity tags publishedAt -_id")
+    .limit(maxLimit)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+});
 
 // port change
 server.post("/create-blog", verifyJWT, (req, res) => {

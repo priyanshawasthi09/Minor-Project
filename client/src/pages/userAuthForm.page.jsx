@@ -20,6 +20,10 @@ const UserAuthForm = ({ type }) => {
   const userAuthThroughServer = (serverRoute, formData) => {
     const url = import.meta.env.VITE_SERVER_DOMAIN + serverRoute;
     console.log("API URL:", url);
+    if (!import.meta.env.VITE_SERVER_DOMAIN) {
+      console.error("VITE_SERVER_DOMAIN is undefined!");
+      return toast.error("Server URL is not defined.");
+    }
 
     axios
       .post(url, formData)

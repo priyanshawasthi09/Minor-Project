@@ -143,16 +143,24 @@ server.post("/google-auth", async (req, res) => {
   if (!access_token) {
     return res.status(400).json({ error: "No token provided" });
   }
-
-  console.log("Received access_token:", access_token); // Debugging step
+  // Debugging step
 
   getAuth()
     .verifyIdToken(access_token)
     .then(async (decodedUser) => {
+      console.log("Decoded User:", decodedUser); // Debugging step
       let { email, name, picture } = decodedUser;
-      console.log(picture);
 
-      picture = picture.replace("s96-c", "s384-c");
+      if (!picture) {
+        console.warn("Google profile picture is missing from ID token.");
+      } else {
+        console.log("Google Profile Picture:", picture);
+      }
+      if (picture.includes("=s96-c")) {
+        picture = picture.replace("=s96-c", "=s384-c"); // Higher resolution
+      }
+      console.log("Modified Google Profile Picture URL:", picture);
+
       let user = await User.findOne({ "personal_info.email": email })
         .select(
           "personal_info.fullname personal_info.username personal_info.profile_img google_auth"
@@ -175,7 +183,6 @@ server.post("/google-auth", async (req, res) => {
           personal_info: {
             fullname: name,
             email,
-            profile_img: picture,
             username,
           },
           google_auth: true,
@@ -247,12 +254,66 @@ const verifyJWT = (req, res, next) => {
   });
 };
 
-server.get("/latest-blogs", (req, res) => {
+server.post("/latest-blogs", (req, res) => {
+  let { page } = req.body;
+
   let maxLimit = 5;
   Blog.find({ draft: false })
     .populate(
       "author",
-      "personal_info.profile_img personal_info.username personal_info.fullname  -_id"
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+    )
+    .sort({ publishedAt: -1 })
+    .select("blog_id title des banner activity tags publishedAt -_id")
+    .skip((page - 1) * maxLimit)
+    .limit(maxLimit)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+});
+
+server.post("/all-latest-blogs-count", (req, res) => {
+  Blog.countDocuments({ draft: false })
+    .then((count) => {
+      return res.status(200).json({ totalDocs: count });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+});
+
+server.get("/trending-blogs", (req, res) => {
+  Blog.find({ draft: false })
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+    )
+    .sort({
+      "activity.total_reads": -1,
+      "activity.total_likes": -1,
+      publishedAt: -1,
+    })
+    .select("blog_id title publishedAt -_id")
+    .limit(5)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+});
+
+server.post("/search-blogs", (req, res) => {
+  let { tag } = req.body;
+  let findQuery = { tags: tag, draft: false };
+  let maxLimit = 5;
+  Blog.find(findQuery)
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
     )
     .sort({ publishedAt: -1 })
     .select("blog_id title des banner activity tags publishedAt -_id")

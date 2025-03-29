@@ -5,6 +5,10 @@ import { createContext, useEffect, useState } from "react";
 import { lookInSession } from "./common/session";
 import Editor from "./pages/editor.pages";
 import HomePage from "./pages/home.page";
+import SearchPage from "./pages/search.page";
+import PageNotFound from "./pages/404.page";
+import ProfilePage from "./pages/profile.page";
+import BlogPage from "./pages/blog.page";
 export const UserContext = createContext({});
 
 // Layout Wrapper for pages that should have Navbar
@@ -51,6 +55,38 @@ const App = () => {
           element={
             <LayoutWithNavbar>
               <UserAuthForm type="sign-up" />
+            </LayoutWithNavbar>
+          }
+        />
+        <Route
+          path="/search/:query"
+          element={
+            <LayoutWithNavbar>
+              <SearchPage />
+            </LayoutWithNavbar>
+          }
+        />
+        <Route
+          path="/blog/:blog_id"
+          element={
+            <LayoutWithNavbar>
+              <BlogPage />
+            </LayoutWithNavbar>
+          }
+        />
+        <Route
+          path="user/:id"
+          element={
+            <LayoutWithNavbar>
+              <ProfilePage />
+            </LayoutWithNavbar>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <LayoutWithNavbar>
+              <PageNotFound />
             </LayoutWithNavbar>
           }
         />

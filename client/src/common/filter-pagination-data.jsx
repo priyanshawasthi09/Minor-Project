@@ -6,7 +6,7 @@ export const FilterPaginationData = async ({
   data,
   page,
   countRoute,
-  data_to_send,
+  data_to_send = {},
 }) => {
   let obj;
 
@@ -14,26 +14,22 @@ export const FilterPaginationData = async ({
     // Append new data to the existing state
     obj = {
       ...state,
-      results: [...(state.results || []), ...data], // Ensure `results` exists
+      results: [...state.results, ...data],
+      page: page, // Ensure `results` exists
     };
   } else {
-    try {
-      const response = await axios.post(
-        import.meta.env.VITE_SERVER_DOMAIN + countRoute,
-        data_to_send
-      );
-      const totalDocs = response.data.totalDocs;
-
-      obj = {
-        results: data,
-        page: 1,
-        totalDocs,
-      };
-    } catch (err) {
-      console.error("Error fetching pagination data:", err);
-      obj = { results: [], page: 1, totalDocs: 0 }; // Return a valid empty object to prevent crashes
-    }
+    await axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + countRoute, data_to_send)
+      .then(({ data: { totalDocs } }) => {
+        obj = {
+          results: data,
+          page: 1,
+          totalDocs,
+        };
+      })
+      .catch((err) => {
+        console.error("Error fetching pagination data:", err); // Return a valid empty object to prevent crashes
+      });
   }
-
   return obj;
 };

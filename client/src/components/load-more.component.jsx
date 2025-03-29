@@ -1,7 +1,5 @@
 const LoadMoreDataBtn = ({ state, fetchDataFun }) => {
-  if (!state || !state.results || state.results.length === 0) return null;
-
-  if (state.totalDocs > state.results.length) {
+  if (state != null && state.totalDocs > state.results.length) {
     return (
       <div>
         <button

@@ -7,9 +7,16 @@
 #     "password":"John@123"
 #  }
 
-POST http://localhost:3000/search-blogs
+# POST http://localhost:3000/get-blogs
+# Content-Type: application/json
+
+# {
+#   "blog_id":"ReactJs-A-part-of-Programming-oAf9u6gBIZQaTQLDP26ru"
+# }
+
+POST http://localhost:3000/get-profile
 Content-Type: application/json
 
 {
-  "tag":"react"
+  "username":"priyanshawasthi09"
 }

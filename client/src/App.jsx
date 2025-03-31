@@ -93,6 +93,7 @@ const App = () => {
 
         {/* Editor page will NOT have Navbar */}
         <Route path="/editor" element={<Editor />} />
+        <Route path="/editor/:blog_id" element={<Editor />} />
       </Routes>
     </UserContext.Provider>
   );

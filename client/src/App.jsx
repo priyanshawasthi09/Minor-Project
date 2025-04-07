@@ -9,6 +9,9 @@ import SearchPage from "./pages/search.page";
 import PageNotFound from "./pages/404.page";
 import ProfilePage from "./pages/profile.page";
 import BlogPage from "./pages/blog.page";
+import SideNav from "./components/sidenavbar.component";
+import ChangePassword from "./pages/change-password.page";
+import EditProfile from "./pages/edit-profile.page";
 export const UserContext = createContext({});
 
 // Layout Wrapper for pages that should have Navbar
@@ -20,7 +23,7 @@ const LayoutWithNavbar = ({ children }) => (
 );
 
 const App = () => {
-  const [userAuth, setUserAuth] = useState({});
+  const [userAuth, setUserAuth] = useState({ access_token: null });
 
   useEffect(() => {
     let userInSession = lookInSession("user");
@@ -42,6 +45,17 @@ const App = () => {
             </LayoutWithNavbar>
           }
         ></Route>
+        <Route
+          path="/settings"
+          element={
+            <LayoutWithNavbar>
+              <SideNav />
+            </LayoutWithNavbar>
+          }
+        >
+          <Route path="edit-profile" element={<EditProfile />} />
+          <Route path="change-password" element={<ChangePassword />} />
+        </Route>
         <Route
           path="/signin"
           element={

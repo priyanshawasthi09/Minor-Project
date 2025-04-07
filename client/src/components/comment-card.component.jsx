@@ -106,39 +106,31 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     }));
   };
 
-  const loadReplies = async ({ skip = 0 }) => {
-    hideReplies(); // Clear previous replies before loading new ones
+  const loadReplies = ({ skip = 0, currentIndex = index }) => {
+    if (Comments_Array[currentIndex].children.length) {
+      hideReplies();
+      axios
+        .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-replies", {
+          _id: Comments_Array[currentIndex]._id,
+          skip,
+        })
+        .then(({ data: { replies } }) => {
+          Comments_Array[currentIndex].isReplyLoaded = true;
 
-    try {
-      const { data } = await axios.post(
-        import.meta.env.VITE_SERVER_DOMAIN + "/get-replies",
-        { _id, skip }
-      );
+          for (let i = 0; i < replies.length; i++) {
+            replies[i].childrenLevel =
+              Comments_Array[currentIndex].childrenLevel + 1;
+            Comments_Array.splice(currentIndex + 1 + i + skip, 0, replies[i]);
+          }
 
-      if (data.replies.length === 0) return;
-
-      // Ensure replies are at the correct nesting level
-      const updatedReplies = data.replies.map((reply) => ({
-        ...reply,
-        childrenLevel: commentData.childrenLevel + 1,
-      }));
-
-      // Insert replies at the correct position
-      let updatedCommentsArray = [...Comments_Array];
-      updatedCommentsArray.splice(index + 1, 0, ...updatedReplies);
-
-      commentData.isReplyLoaded = true; // Mark as loaded
-
-      setBlogs((prev) => ({
-        ...prev,
-        comments: {
-          ...prev.comments,
-          results: updatedCommentsArray,
-        },
-      }));
-    } catch (error) {
-      console.error("Error loading replies:", error);
-      toast.error("Failed to load replies. Try again!");
+          setBlogs({
+            ...blog,
+            comments: { ...comments, results: Comments_Array },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -187,6 +179,40 @@ const CommentCard = ({ index, leftVal, commentData }) => {
 
     setReplying((preVal) => !preVal);
   };
+
+  const LoadMoreRepliesButton = () => {
+    let parentIndex = getParentIndex();
+    let button = (
+      <button
+        onClick={() =>
+          loadReplies({
+            skip: index - parentIndex,
+            currentIndex: parentIndex,
+          })
+        }
+        className="text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2"
+      >
+        Load More Replies
+      </button>
+    );
+    if (Comments_Array[index + 1]) {
+      if (
+        Comments_Array[index + 1].childrenLevel <
+        Comments_Array[index].childrenLevel
+      ) {
+        if (index - parentIndex < Comments_Array[parentIndex].children.length) {
+          return button;
+        }
+      }
+    } else {
+      if (parentIndex) {
+        if (index - parentIndex < Comments_Array[parentIndex].children.length) {
+          return button;
+        }
+      }
+    }
+  };
+
   return (
     <div className="w-full" style={{ paddingLeft: `${leftVal * 10}px` }}>
       <div className="my-5 p-6 rounded-md border border-grey">
@@ -243,6 +269,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
           ""
         )}
       </div>
+      <LoadMoreRepliesButton />
     </div>
   );
 };

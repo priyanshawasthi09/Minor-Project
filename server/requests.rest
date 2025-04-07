@@ -1,3 +1,31 @@
+# Signup Meghaa
+
+
+# POST http://localhost:3000/change-password
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjE1MmVmNWY3ZTcwOGMzZWMxYmI1NSIsImlhdCI6MTc0Mzg2ODY1NX0.a4vf7aWglFpHfKqauBo6wH69PS0-Uh6ZmgROcVLPjaI
+
+// {
+  // "fullname": "Meghaa",
+  // "email": "meghaajais.mj@gmail.com",
+  // "password": "Harsha1"
+  // "currentPassword": "Harsha1",
+  // "newPassword": "Harsha2"
+# }
+
+POST http://localhost:3000/signin
+Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjE1MmVmNWY3ZTcwOGMzZWMxYmI1NSIsImlhdCI6MTc0Mzg2ODY1NX0.a4vf7aWglFpHfKqauBo6wH69PS0-Uh6ZmgROcVLPjaI
+
+{
+  "fullname": "Meghaa",
+  "email": "meghaajais.mj@gmail.com",
+  "password": "Harsha1"
+  // "currentPassword": "Harsha1",
+  // "newPassword": "Harsha2"
+}
+
+
 # POST  http://localhost:3000/signup
 # Content-Type: application/json
 
@@ -14,9 +42,9 @@
 #   "blog_id":"ReactJs-A-part-of-Programming-oAf9u6gBIZQaTQLDP26ru"
 # }
 
-POST http://localhost:3000/get-profile
-Content-Type: application/json
+# POST http://localhost:3000/get-profile
+# Content-Type: application/json
 
-{
-  "username":"priyanshawasthi09"
-}
+# {
+#  "username":"priyanshawasthi09"
+# }
